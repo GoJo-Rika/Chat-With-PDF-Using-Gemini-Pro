@@ -8,6 +8,7 @@ from langchain_community.vectorstores import FAISS
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import PromptTemplate
 from langchain.chains.question_answering import load_qa_chain
+import time ## to check the response speed
 
 from dotenv import load_dotenv
 load_dotenv() ## Loading all the environment variables
@@ -65,12 +66,14 @@ def user_input(user_question):
     docs = new_db.similarity_search(query=user_question)
 
     chain = get_conversational_chain()
-
+    
+    start_time = time.process_time()
     response = chain(
         {"input_documents": docs, "question": user_question},
         return_only_outputs=True
     )
-
+    print("Response time :", time.process_time() - start_time)
+    
     st.write("Reply: ", response["output_text"])
 
 def main():
@@ -85,7 +88,7 @@ def main():
 
     with st.sidebar:
         st.title("Menu:")
-        pdf_docs = st.file_uploader("Upload your PDF Files anc Check on the Submit & Process Button", 
+        pdf_docs = st.file_uploader("Upload your PDF File(s) and click on the Submit & Process Button", 
                                     accept_multiple_files=True)
         
         if st.button("Submit & Process"):
